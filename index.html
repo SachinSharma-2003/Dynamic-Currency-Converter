@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Currency Converter 🌍</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="shortcut icon" href="USD.png" type="image/x-icon">
+</head>
+<body>
+    <div id="converter-container">
+        <header>
+            <h2>Dynamic Currency Converter</h2>
+        </header>
+
+        <div class="input-group select-group">
+            <label for="from-currency">Convert From:</label>
+            <select id="from-currency">
+                <option value="USD" selected>US Dollar (USD)</option>
+                <option value="EUR">Euro (EUR)</option>
+                <option value="GBP">British Pound (GBP)</option>
+                <option value="JPY">Japanese Yen (JPY)</option>
+                <option value="CAD">Canadian Dollar (CAD)</option>
+                <option value="INR">Indian Rupee (INR)</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <label for="amount-input">Enter Amount:</label>
+            <input type="number" id="amount-input" placeholder="e.g., 100" min="0" step="0.01">
+        </div>
+
+        <div class="input-group select-group">
+            <label for="to-currency">Convert To:</label>
+            <select id="to-currency">
+                <option value="INR" selected>Indian Rupee (INR)</option>
+                <option value="USD">US Dollar (USD)</option>
+                <option value="EUR">Euro (EUR)</option>
+                <option value="GBP">British Pound (GBP)</option>
+                <option value="JPY">Japanese Yen (JPY)</option>
+                <option value="CAD">Canadian Dollar (CAD)</option>
+            </select>
+        </div>
+        
+        <div>
+            <button id="convert-btn" onclick="convertCurrency()">Convert</button>
+        </div>
+
+        <div id="result" class="conversion-result">
+            </div>
+
+    </div>
+
+    <script>
+       
+        const exchangeRates = {
+            USD: 1.00,  // Base
+            EUR: 0.93,
+            GBP: 0.81,
+            JPY: 151.70,
+            CAD: 1.36,
+            INR: 80.35  // Updated INR rate
+        };
+
+        function convertCurrency() {
+            const amountInput = document.getElementById("amount-input");
+            const resultDiv = document.getElementById("result");
+            const fromCurrency = document.getElementById("from-currency").value;
+            const toCurrency = document.getElementById("to-currency").value;
+            const amount = parseFloat(amountInput.value);
+
+            // 1. Validation
+            if (isNaN(amount) || amount <= 0) {
+                resultDiv.innerHTML = "❌ Please enter a valid positive amount.";
+                resultDiv.style.color = 'red';
+                return;
+            }
+
+            // 2. Conversion Logic
+            try {
+                // Step 1: Convert the amount FROM the source currency TO the base currency (USD)
+                // Formula: Amount in USD = Amount in Source / Rate of Source
+                const amountInUSD = amount / exchangeRates[fromCurrency];
+
+                // Step 2: Convert the amount from the base currency (USD) TO the target currency
+                // Formula: Amount in Target = Amount in USD * Rate of Target
+                const convertedAmount = amountInUSD * exchangeRates[toCurrency];
+
+                // 3. Formatting Output
+                const formattedAmount = convertedAmount.toFixed(2);
+                
+                // Get the display name for the 'to' currency (e.g., INR -> Indian Rupee)
+                const toCurrencyName = document.getElementById('to-currency').options[document.getElementById('to-currency').selectedIndex].text;
+
+                resultDiv.innerHTML = `${amount.toFixed(2)} ${fromCurrency} = ${formattedAmount} ${toCurrencyName}`;
+                resultDiv.style.color = 'wheat';
+            } catch (error) {
+                resultDiv.innerHTML = "Conversion error. Check currency data.";
+                resultDiv.style.color = 'red';
+                console.error("Conversion Error:", error);
+            }
+        }
+    </script>
+</body>
+</html>
